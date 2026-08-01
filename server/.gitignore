@@ -1,0 +1,30 @@
+# Dependency folders (Idhu romba mukkiyam, upload aaga koodathu)
+node_modules/
+jspm_packages/
+web_modules/
+
+# Environment variables (Sensitive passwords matrum keys irukum, commit seiya koodathu)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System files (macOS matrum Windows system generated files)
+.DS_Store
+Thumbs.db
+
+# IDE configuration files (Optional, skip panna nalladhu)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
