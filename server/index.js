@@ -19,7 +19,9 @@ const allowedOrigins = [
     'http://localhost:3001',
     'http://localhost:5173',
     "https://chettinad-handicrafts.vercel.app",
-    "https://chettinad-handicrafts-uevm.vercel.app"
+    "https://chettinad-handicrafts-uevm.vercel.app",
+    "https://admin.chettinaduhandicrafts.in",
+    "https://www.chettinaduhandicrafts.in",
 ];
 
 const corsOptions = {
