@@ -8,8 +8,7 @@ const backendDomain =
       ? `http://${window.location.hostname}:5000`
       : "http://localhost:5000"
     : process.env.NODE_ENV === "production"
-      ? // ? "https://naach-boutique.onrender.com"   // Use the production API in production environment
-        "https://dnbs.onrender.com"
+      ? "https://chettinad-handicrafts.onrender.com"
       : "http://192.168.0.1:5000";
 
 const SummaryApi = {
