@@ -131,7 +131,7 @@ const itemVariants = {
   },
 };
 
-export default function PrivacyPolicy({ lastUpdated = "[01 08 2026]" }) {
+export default function PrivacyPolicy({ lastUpdated = "[01/08/2026]" }) {
   return (
     <section className="w-full bg-[#F7F2E8] py-16">
       <div className="max-w-[1500px] md:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1220px] 2xl:max-w-[1500px] mx-auto px-6 sm:px-10 lg:px-4 xl:px-10">

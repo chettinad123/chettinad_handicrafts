@@ -55,9 +55,9 @@ const defaultInfoCards = [
     icon: Mail,
     iconBg: "bg-[#0B1A35]",
     title: "Email Us",
-    lines: ["Chettinadhandicrafts07@gmail.com"],
+    lines: ["chettinadhandicrafts07@gmail.com"],
     type: "email",
-    value: "Chettinadhandicrafts07@gmail.com",
+    value: "chettinadhandicrafts07@gmail.com",
   },
   {
     icon: Clock,

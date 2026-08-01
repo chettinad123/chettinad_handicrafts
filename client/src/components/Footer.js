@@ -49,9 +49,9 @@ const contactInfo = [
   },
   {
     icon: Mail,
-    lines: ["Chettinadhandicrafts07@gmail.com"],
+    lines: ["chettinadhandicrafts07@gmail.com"],
     type: "email",
-    value: "Chettinadhandicrafts07@gmail.com",
+    value: "chettinadhandicrafts07@gmail.com",
   },
   {
     icon: Clock,
