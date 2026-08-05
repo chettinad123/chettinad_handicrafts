@@ -7,8 +7,16 @@ import api from "../common/apiClient";
 import SummaryApi from "../common/SummaryApi";
 
 const shareLinks = [
-  { icon: FaFacebook, href: "https://facebook.com", label: "Share on Facebook" },
-  { icon: FaInstagram, href: "https://instagram.com", label: "Share on Instagram" },
+  {
+    icon: FaFacebook,
+    href: "https://facebook.com",
+    label: "Share on Facebook",
+  },
+  {
+    icon: FaInstagram,
+    href: "https://instagram.com",
+    label: "Share on Instagram",
+  },
   { icon: FaYoutube, href: "https://youtube.com", label: "Share on YouTube" },
 ];
 
@@ -23,11 +31,18 @@ const fadeInLeft = {
 };
 const staggerContainer = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.1 } },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+  },
 };
 const imageVariants = {
   hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: "easeOut" } },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.7, ease: "easeOut" },
+  },
 };
 
 /* ─── Rich text sanitizer ──────────────────────────────────────────────
@@ -37,7 +52,15 @@ const imageVariants = {
  * the HTML is rendered with dangerouslySetInnerHTML, so formatting
  * shows up correctly instead of as literal <b>/<i>/<u> text.
  * ──────────────────────────────────────────────────────────────────── */
-const RICH_TEXT_ALLOWED_TAGS = new Set(["B", "STRONG", "I", "EM", "U", "BR"]);
+const RICH_TEXT_ALLOWED_TAGS = new Set([
+  "B",
+  "STRONG",
+  "I",
+  "EM",
+  "U",
+  "BR",
+  "A",
+]);
 
 const sanitizeRichText = (html) => {
   if (!html || typeof html !== "string") return "";
@@ -56,8 +79,25 @@ const sanitizeRichText = (html) => {
       if (!RICH_TEXT_ALLOWED_TAGS.has(child.tagName)) {
         while (child.firstChild) node.insertBefore(child.firstChild, child);
         node.removeChild(child);
+      } else if (child.tagName === "A") {
+        // Keep only href; regenerate target/rel safely.
+        const href = child.getAttribute("href") || "";
+        [...child.attributes].forEach((attr) =>
+          child.removeAttribute(attr.name),
+        );
+        if (href) {
+          child.setAttribute("href", href);
+          child.setAttribute("target", "_blank");
+          child.setAttribute("rel", "noopener noreferrer");
+          clean(child);
+        } else {
+          while (child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+        }
       } else {
-        [...child.attributes].forEach((attr) => child.removeAttribute(attr.name));
+        [...child.attributes].forEach((attr) =>
+          child.removeAttribute(attr.name),
+        );
         clean(child);
       }
     });
@@ -99,7 +139,9 @@ const renderBlock = (block, idx) => {
       const Tag = block.level || "h2";
       return (
         <motion.div key={idx} variants={fadeInUp}>
-          <Tag className={`font-serif ${headingSizeMap[block.level] || headingSizeMap.h2} text-[#5B2D07]`}>
+          <Tag
+            className={`font-serif ${headingSizeMap[block.level] || headingSizeMap.h2} text-[#5B2D07]`}
+          >
             {block.text}
           </Tag>
         </motion.div>
@@ -111,19 +153,23 @@ const renderBlock = (block, idx) => {
         <motion.p
           key={idx}
           variants={fadeInUp}
-          className="text-sm sm:text-base text-[#2A190C] leading-relaxed"
+          className="text-sm sm:text-base text-[#2A190C] leading-relaxed [&_a]:text-[#E29C15] [&_a]:underline [&_a]:font-medium hover:[&_a]:text-[#C98B24]"
           dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.text) }}
         />
       );
 
     case "list":
       return block.style === "number" ? (
-        <motion.ol key={idx} variants={staggerContainer} className="list-decimal list-inside space-y-1.5">
+        <motion.ol
+          key={idx}
+          variants={staggerContainer}
+          className="list-decimal list-inside space-y-1.5"
+        >
           {block.items?.map((item, i) => (
             <motion.li
               key={i}
               variants={fadeInUp}
-              className="text-sm sm:text-base text-[#2A190C] leading-relaxed"
+              className="text-sm sm:text-base text-[#2A190C] leading-relaxed [&_a]:text-[#E29C15] [&_a]:underline [&_a]:font-medium hover:[&_a]:text-[#C98B24]"
               whileHover={{ x: 8 }}
               transition={{ duration: 0.2 }}
               dangerouslySetInnerHTML={{ __html: sanitizeRichText(item) }}
@@ -131,7 +177,11 @@ const renderBlock = (block, idx) => {
           ))}
         </motion.ol>
       ) : (
-        <motion.ul key={idx} variants={staggerContainer} className="space-y-1.5">
+        <motion.ul
+          key={idx}
+          variants={staggerContainer}
+          className="space-y-1.5"
+        >
           {block.items?.map((item, i) => (
             <motion.li
               key={i}
@@ -140,7 +190,10 @@ const renderBlock = (block, idx) => {
               whileHover={{ x: 8 }}
               transition={{ duration: 0.2 }}
             >
-              - <span dangerouslySetInnerHTML={{ __html: sanitizeRichText(item) }} />
+              -{" "}
+              <span
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(item) }}
+              />
             </motion.li>
           ))}
         </motion.ul>
@@ -204,12 +257,11 @@ const renderBlock = (block, idx) => {
         >
           <p className="text-xs font-semibold text-[#E29C15] mb-1">Pro Tip</p>
           <p
-            className="text-sm text-[#2A190C]"
+            className="text-sm text-[#2A190C] [&_a]:text-[#5B2D07] [&_a]:font-semibold [&_a]:underline [&_a]:decoration-[#E29C15] [&_a]:decoration-2 hover:[&_a]:text-[#E29C15]"
             dangerouslySetInnerHTML={{ __html: sanitizeRichText(block.text) }}
           />
         </motion.div>
       );
-
     case "button":
       return (
         <motion.a
@@ -217,7 +269,9 @@ const renderBlock = (block, idx) => {
           variants={fadeInUp}
           href={block.href}
           target={block.buttonTarget || "_self"}
-          rel={block.buttonTarget === "_blank" ? "noopener noreferrer" : undefined}
+          rel={
+            block.buttonTarget === "_blank" ? "noopener noreferrer" : undefined
+          }
           className="inline-block rounded-lg bg-[#E29C15] hover:bg-[#C98B24] transition-colors px-6 py-2.5 text-sm font-semibold text-white"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
@@ -298,7 +352,9 @@ function BlogContent({ blog }) {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
-              <span className="text-xs sm:text-sm font-semibold text-[#E29C15]">Share :</span>
+              <span className="text-xs sm:text-sm font-semibold text-[#E29C15]">
+                Share :
+              </span>
               {shareLinks.map(({ icon: Icon, href, label }) => (
                 <motion.a
                   key={label}
@@ -397,7 +453,9 @@ export default function BlogView() {
   if (error || !blog) {
     return (
       <section className="w-full bg-[#F7F2E8] py-24 text-center">
-        <p className="text-sm text-red-600 mb-4">{error || "Article not found."}</p>
+        <p className="text-sm text-red-600 mb-4">
+          {error || "Article not found."}
+        </p>
         <button
           onClick={() => navigate("/blog")}
           className="text-sm font-semibold text-[#E29C15] underline"
