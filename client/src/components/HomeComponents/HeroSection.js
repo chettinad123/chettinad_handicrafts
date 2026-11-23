@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import heroImg from "../../assets/HomePageImages/Banner.webp";
+// 👇 add your background image asset here
+import heroBg from "../../assets/HomePageImages/BgImage.webp";
 import Img1 from "../../assets/HomePageImages/Stat1.webp";
 import Img2 from "../../assets/HomePageImages/Stat2.webp";
 import Img3 from "../../assets/HomePageImages/Stat3.webp";
@@ -77,10 +79,45 @@ export default function HeroSection() {
   const statsInView = useInView(statsRef, { once: true, amount: 0.2 });
 
   return (
-    <section ref={sectionRef} className="w-full bg-[#F7F2E8] overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="
+    relative w-full bg-[#F7F2E8] overflow-hidden
+    lg:min-h-[650px]
+    2xl:min-h-[720px]
+    min-[2560px]:min-h-[900px]
+    min-[3840px]:min-h-[1100px]
+  "
+    >
+      {/* Background image — lg screens only */}
+      <div
+        className="hidden lg:block absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${heroBg})`,
+        }}
+      />
+
       {/* Hero with text on the left, image on the right */}
-      <div className="relative flex items-center">
-        <div className="relative z-10 w-full max-w-[1500px] md:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1220px] 2xl:max-w-[1500px] mx-auto px-6 sm:px-10 lg:px-4 xl:px-10 py-16">
+      <div className="relative z-10 flex items-center h-full">
+        <div
+          className="
+    relative z-10
+    w-full
+    max-w-[1500px]
+    md:max-w-[768px]
+    lg:max-w-[1024px]
+    xl:max-w-[1220px]
+    2xl:max-w-[1500px]
+    mx-auto
+    px-6 sm:px-10 lg:px-4 xl:px-10
+    py-16
+    min-h-[650px]
+    2xl:min-h-[720px]
+    min-[2560px]:min-h-[900px]
+    min-[3840px]:min-h-[1100px]
+    flex items-center
+  "
+        >
           <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
             {/* Left: text content */}
             <motion.div
@@ -134,12 +171,12 @@ export default function HeroSection() {
               </motion.div>
             </motion.div>
 
-            {/* Right: hero image */}
+            {/* Right: hero image — hidden on lg and up only */}
             <motion.div
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               variants={imageVariants}
-              className="w-full lg:w-1/2"
+              className="w-full lg:w-1/2 lg:hidden"
             >
               <img
                 src={heroImg}
@@ -157,7 +194,7 @@ export default function HeroSection() {
         initial="hidden"
         animate={statsInView ? "visible" : "hidden"}
         variants={containerVariants}
-        className="w-full bg-white"
+        className="relative z-10 w-full bg-white"
       >
         <div className="max-w-[1500px] md:max-w-[768px] lg:max-w-[1024px] xl:max-w-[1220px] 2xl:max-w-[1500px] mx-auto grid grid-cols-2 sm:grid-cols-4 gap-y-8 gap-x-4 px-6 sm:px-10 py-10">
           {stats.map(({ image, label, desc }, i) => (
@@ -179,9 +216,7 @@ export default function HeroSection() {
                 <p className="font-serif whitespace-nowrap text-sm sm:text-base font-bold tracking-wide uppercase text-[#0B1A35]">
                   {label}
                 </p>
-                <p className="text-xs sm:text-sm text-[#0B1A35]">
-                  {desc}
-                </p>
+                <p className="text-xs sm:text-sm text-[#0B1A35]">{desc}</p>
               </div>
             </motion.div>
           ))}

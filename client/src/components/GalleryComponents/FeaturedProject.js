@@ -5,6 +5,7 @@ import p1 from "../../assets/GalleryImages/Project1.webp";
 import p2 from "../../assets/GalleryImages/Project2.webp";
 import p3 from "../../assets/GalleryImages/Project3.webp";
 import p4 from "../../assets/GalleryImages/Project4.webp";
+import p5 from "../../assets/GalleryImages/Project5.webp";
 import card1 from "../../assets/GalleryImages/Card1.webp";
 import card2 from "../../assets/GalleryImages/Card2.webp";
 import card3 from "../../assets/GalleryImages/Card3.webp";
@@ -71,17 +72,17 @@ const defaultProjects = [
     tags: ["Original Granite", "Stone Pillars"],
   },
   {
-    image: p3,
+    image: p4,
     title: "Traditional Temple Restoration",
     tags: ["Stone Carvings", " Heritage Works"],
   },
   {
-    image: p4,
+    image: p3,
     title: "Custom Home Interiors",
     tags: ["Wood Works", "Bespoke Furniture"],
   },
   {
-    image: p4,
+    image: p5,
     title: "Authentic Tanjore Paintings",
     tags: ["New Creations", "Restoration Works"],
   },

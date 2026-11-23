@@ -175,18 +175,18 @@ export default function AboutHero() {
           </motion.div>
 
           {/* Right: image */}
-          <motion.div
-            initial="hidden"
-            animate={historyInView ? "visible" : "hidden"}
-            variants={fadeUp}
-            className="w-full lg:w-1/2"
-          >
-            <img
-              src={historyImg}
-              alt="Hand-carved wooden figures and cabinet"
-              className="w-full h-[260px] sm:h-[340px] lg:h-[400px] rounded object-cover"
-            />
-          </motion.div>
+<motion.div
+  initial="hidden"
+  animate={historyInView ? "visible" : "hidden"}
+  variants={fadeUp}
+  className="w-full lg:w-1/2"
+>
+  <img
+    src={historyImg}
+    alt="Hand-carved wooden figures and cabinet"
+    className="w-full h-auto rounded object-cover"
+  />
+</motion.div>
         </div>
       </div>
     </section>

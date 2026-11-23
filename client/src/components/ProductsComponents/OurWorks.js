@@ -74,7 +74,7 @@ function WorkCategory({ bannerImage, title, description, items, enquiryPath }) {
           <img
             src={bannerImage}
             alt={title}
-            className="w-full sm:w-56 md:w-64 h-32 sm:h-24 md:h-28 object-cover rounded flex-shrink-0"
+            className="w-full sm:w-auto h-32 sm:h-24 md:h-28 object-contain rounded flex-shrink-0"
           />
           <div className="text-center sm:text-left">
             <h2 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-wide text-[#5B2D07]">
@@ -105,7 +105,7 @@ function WorkCategory({ bannerImage, title, description, items, enquiryPath }) {
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-56 sm:h-52 md:h-56 object-cover"
+                className="w-full h-72 lg:h-64 xl:h-72 object-fill"
               />
               <div className="p-4 sm:p-5 flex flex-col items-start flex-1">
                 <h3 className="font-serif text-base sm:text-lg font-semibold text-[#5B2D07]">
