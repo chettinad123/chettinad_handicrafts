@@ -6,29 +6,26 @@ const createGalleryImage = async (data) => {
     return await galleryImage.save();
 };
 
-const findAll = async ({ search, category, status, page = 1, limit = 6 }) => {
+const findAll = async ({ search, category, status }) => {
     const query = {};
 
     if (search) {
-        query.title = { $regex: search, $options: 'i' };
+        query.title = { $regex: search, $options: "i" };
     }
 
-    if (category && category !== 'All Categories') {
+    if (category && category !== "All Categories") {
         query.category = category;
     }
 
-    if (status && status !== 'All Status') {
+    if (status && status !== "All Status") {
         query.status = status;
     }
 
-    const skip = (page - 1) * limit;
-
     const [images, total] = await Promise.all([
         GalleryImage.find(query)
-            .populate('category')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit),
+            .populate("category")
+            .sort({ createdAt: -1 }),
+
         GalleryImage.countDocuments(query),
     ]);
 

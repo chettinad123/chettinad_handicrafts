@@ -34,15 +34,22 @@ const createGalleryImage = async ({ title, description, category, metaTitle, met
     return galleryImage;
 };
 
-const getAllGalleryImages = async ({ search, category, status, page, limit }) => {
-    const { images, total } = await galleryRepository.findAll({ search, category, status, page, limit });
+const getAllGalleryImages = async ({ search, category, status, page = 1, limit = 6 }) => {
+    const { images, total } = await galleryRepository.findAll({
+        search,
+        category,
+        status,
+    });
+
+    const currentPage = Number(page) || 1;
+    const currentLimit = Number(limit) || 6;
 
     return {
         images,
         total,
-        page: Number(page) || 1,
-        limit: Number(limit) || 6,
-        totalPages: Math.ceil(total / (Number(limit) || 6)),
+        page: currentPage,
+        limit: currentLimit,
+        totalPages: Math.ceil(total / currentLimit),
     };
 };
 

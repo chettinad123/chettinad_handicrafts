@@ -161,6 +161,7 @@ export default function OurWorks() {
         const res = await api({
           url: summaryApi.getGallery.url,
           method: summaryApi.getGallery.method,
+          params: { paginate: false },
         });
 
         const raw = res.data?.data?.images ?? [];
