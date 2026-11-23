@@ -1,29 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Calendar, Clock } from "lucide-react";
-import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import { motion, useAnimation, useInView } from "framer-motion";
 import api from "../common/apiClient";
 import SummaryApi from "../common/SummaryApi";
 
-const shareLinks = [
-  {
-    icon: FaFacebook,
-    href: "https://facebook.com",
-    label: "Share on Facebook",
-  },
-  {
-    icon: FaInstagram,
-    href: "https://instagram.com",
-    label: "Share on Instagram",
-  },
-  { icon: FaYoutube, href: "https://youtube.com", label: "Share on YouTube" },
-];
-
 // Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 const fadeInLeft = {
   hidden: { opacity: 0, x: -30 },
@@ -206,7 +191,8 @@ const renderBlock = (block, idx) => {
           variants={imageVariants}
           src={block.imageurl?.url}
           alt={block.text || "Blog image"}
-          className="w-full rounded-lg object-cover max-h-[420px]"
+          // className="w-full rounded-lg object-cover max-h-[420px]"
+          className="w-full h-auto rounded-lg"
           whileHover={{ scale: 1.01 }}
           transition={{ duration: 0.4 }}
         />
@@ -347,7 +333,7 @@ function BlogContent({ blog }) {
               </span>
             </div>
 
-            <motion.div
+            {/* <motion.div
               className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
@@ -357,7 +343,7 @@ function BlogContent({ blog }) {
               </span>
               {shareLinks.map(({ icon: Icon, href, label }) => (
                 <motion.a
-                  key={label}
+                  key={label}   
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -370,7 +356,7 @@ function BlogContent({ blog }) {
                   <Icon className="w-4 h-4" />
                 </motion.a>
               ))}
-            </motion.div>
+            </motion.div> */}
           </motion.div>
         </motion.div>
 
@@ -386,7 +372,8 @@ function BlogContent({ blog }) {
             <motion.img
               src={blog.heroimage.url}
               alt={blog.title}
-              className="w-full h-64 sm:h-80 lg:h-[420px] object-cover"
+              // className="w-full h-64 sm:h-80 lg:h-[620px] object-cover"
+              className="w-full aspect-[2/1] object-cover"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.5 }}
             />

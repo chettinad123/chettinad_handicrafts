@@ -263,7 +263,7 @@ export default function AddGallery() {
                 <>
                   <ImageIcon className="w-8 h-8 text-[#0B1A35]/40" />
                   <span className="text-sm text-[#0B1A35]/60">Drag and drop an image here</span>
-                  <span className="text-xs text-[#0B1A35]/40">Recommended size: 1200 × 600 px</span>
+                  <span className="text-xs text-[#0B1A35]/40">Recommended size: 400 × 400 px</span>
                 </>
               )}
               <input

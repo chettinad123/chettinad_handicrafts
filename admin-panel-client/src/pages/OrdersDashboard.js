@@ -1,14 +1,19 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Eye, Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import api from "../common/apiClient"; // TODO: adjust path to your api.js
-import SummaryApi from "../common/SummaryApi"; // TODO: adjust path to your summaryapi.js
+import api from "../common/apiClient";
+import SummaryApi from "../common/SummaryApi";
 
-const statuses = ["New", "In Progress", "Completed"];
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 10; // Match backend default limit or pass preferred limit
 
-// DB stores lowercase/hyphenated status, UI shows Title Case
+// Keep UI labels paired with DB status values
+const STATUS_OPTIONS = [
+  { value: "new", label: "New" },
+  { value: "in-progress", label: "In Progress" },
+  { value: "completed", label: "Completed" },
+];
+
 const STATUS_TO_LABEL = {
   new: "New",
   "in-progress": "In Progress",
@@ -28,28 +33,48 @@ export default function OrdersDashboard() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [status, setStatus] = useState("");
+
+  // Server-side pagination state
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Delete confirmation modal state
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  // Debounce search input to reduce API calls while typing
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
+      const params = {
+        page,
+        limit: PAGE_SIZE,
+        ...(debouncedSearch.trim() && { search: debouncedSearch.trim() }),
+        ...(status && { status }),
+      };
+
       const res = await api({
         url: SummaryApi.getOrders.url,
         method: SummaryApi.getOrders.method,
+        params,
       });
 
-      // Response envelope is: { success, data: { orders, total, page, limit, totalPages } }
-      const raw = res.data?.data?.orders ?? [];
+      // Response envelope: { success, data: { orders, total, page, limit, totalPages } }
+      const data = res.data?.data;
+      const raw = data?.orders ?? [];
 
       const mapped = raw.map((o) => ({
         id: o._id ?? o.id,
@@ -62,26 +87,23 @@ export default function OrdersDashboard() {
       }));
 
       setOrders(mapped);
+      setTotal(data?.total ?? 0);
+      setTotalPages(Math.max(1, data?.totalPages ?? 1));
     } catch (err) {
       toast.error(
         err?.response?.data?.message || "Failed to load custom orders."
       );
+      setOrders([]);
+      setTotal(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, debouncedSearch, status]);
 
-  const filtered = useMemo(() => {
-    return orders.filter((o) => {
-      const matchesSearch = o.name.toLowerCase().includes(search.toLowerCase());
-      const matchesStatus = status ? o.status === status : true;
-      return matchesSearch && matchesStatus;
-    });
-  }, [orders, search, status]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1).slice(0, 4);
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const confirmDelete = (id) => {
     setDeleteTargetId(id);
@@ -100,14 +122,47 @@ export default function OrdersDashboard() {
         method: SummaryApi.deleteOrderById.method,
       });
       toast.success("Order deleted!");
-      setOrders((prev) => prev.filter((o) => o.id !== deleteTargetId));
       setDeleteTargetId(null);
+
+      // Step back a page if the last remaining item on a page > 1 was deleted
+      if (orders.length === 1 && page > 1) {
+        setPage((p) => p - 1);
+      } else {
+        fetchOrders();
+      }
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to delete order.");
     } finally {
       setDeleting(false);
     }
   };
+
+  // Dynamic pagination numbers with ellipsis for larger page counts
+  const getPageNumbers = () => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+    let l;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= page - delta && i <= page + delta)) {
+        range.push(i);
+      }
+    }
+
+    range.forEach((i) => {
+      if (l) {
+        if (i - l === 2) rangeWithDots.push(l + 1);
+        else if (i - l !== 1) rangeWithDots.push("...");
+      }
+      rangeWithDots.push(i);
+      l = i;
+    });
+
+    return rangeWithDots;
+  };
+
+  const pageNumbers = getPageNumbers();
 
   return (
     <div>
@@ -121,14 +176,15 @@ export default function OrdersDashboard() {
               type="text"
               placeholder="Search messages..."
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full rounded-lg border border-[#E29C15]/70 bg-transparent pl-4 pr-11 py-2.5 text-sm text-[#2A190C] placeholder:text-[#2A190C]/40 focus:outline-none focus:ring-2 focus:ring-[#E29C15]/50"
             />
             <button
               type="button"
+              onClick={() => {
+                setDebouncedSearch(search);
+                setPage(1);
+              }}
               className="absolute right-0 top-0 h-full w-11 flex items-center justify-center rounded-r-lg bg-[#E29C15]"
             >
               <Search className="w-4 h-4 text-white" />
@@ -144,9 +200,9 @@ export default function OrdersDashboard() {
             className="rounded-lg border border-[#E29C15]/70 bg-transparent px-4 py-2.5 text-sm text-[#2A190C] focus:outline-none focus:ring-2 focus:ring-[#E29C15]/50"
           >
             <option value="">All Status</option>
-            {statuses.map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
               </option>
             ))}
           </select>
@@ -154,7 +210,7 @@ export default function OrdersDashboard() {
 
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse border border-[#E29C15] rounded-lg ">
+          <table className="w-full text-left border-collapse border border-[#E29C15] rounded-lg">
             <thead>
               <tr className="border-b border-[#E29C15]">
                 {["Name", "Project category", "Product Name", "Location", "Date", "Action"].map((h) => (
@@ -174,14 +230,14 @@ export default function OrdersDashboard() {
                     Loading orders...
                   </td>
                 </tr>
-              ) : pageItems.length === 0 ? (
+              ) : orders.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-sm text-[#2A190C80]">
                     No custom orders found.
                   </td>
                 </tr>
               ) : (
-                pageItems.map((o) => (
+                orders.map((o) => (
                   <tr key={o.id}>
                     <td className="py-4 pl-4 pr-4 text-sm text-[#2A190C]">{o.name}</td>
                     <td className="py-4 pl-4 pr-4 text-sm text-[#2A190C]">{o.category}</td>
@@ -216,8 +272,8 @@ export default function OrdersDashboard() {
         {/* Footer / pagination */}
         <div className="flex items-center justify-between mt-6 flex-wrap gap-3">
           <p className="text-sm text-[#2A190C80]">
-            Showing {filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1} to{" "}
-            {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} Custom order details
+            Showing {total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1} to{" "}
+            {Math.min(page * PAGE_SIZE, total)} of {total} Custom order details
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -227,19 +283,25 @@ export default function OrdersDashboard() {
             >
               {"<"}
             </button>
-            {pageNumbers.map((n) => (
-              <button
-                key={n}
-                onClick={() => setPage(n)}
-                className={`w-9 h-9 rounded-lg border font-semibold transition-colors ${
-                  page === n
-                    ? "bg-[#E29C15] text-white border-[#E29C15]"
-                    : "border-[#E29C15] text-[#E29C15] hover:bg-[#E29C15] hover:text-white"
-                }`}
-              >
-                {n}
-              </button>
-            ))}
+            {pageNumbers.map((n, index) =>
+              n === "..." ? (
+                <span key={`dots-${index}`} className="w-9 h-9 flex items-center justify-center text-[#2A190C]/40">
+                  ...
+                </span>
+              ) : (
+                <button
+                  key={n}
+                  onClick={() => setPage(n)}
+                  className={`w-9 h-9 rounded-lg border font-semibold transition-colors ${
+                    page === n
+                      ? "bg-[#E29C15] text-white border-[#E29C15]"
+                      : "border-[#E29C15] text-[#E29C15] hover:bg-[#E29C15] hover:text-white"
+                  }`}
+                >
+                  {n}
+                </button>
+              )
+            )}
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}

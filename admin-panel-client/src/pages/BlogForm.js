@@ -621,7 +621,7 @@ function ContentBlock({ block, index, onUpdate, onRemove, listeners }) {
         {block.type === "image" && (
           <>
             <div>
-              <label className="block text-sm font-medium text-[#5B2D07] mb-1.5">Upload Image</label>
+              <label className="block text-sm font-medium text-[#5B2D07] mb-1.5">Upload Image(1000 × 650px)</label>
               <input
                 type="file"
                 accept="image/*"

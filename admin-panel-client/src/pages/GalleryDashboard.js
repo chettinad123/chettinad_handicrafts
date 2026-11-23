@@ -554,7 +554,7 @@ export default function GalleryDashboard() {
         {!loading && !error && images.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {images.map((img) => (
-              <div key={img._id} className="rounded shadow shadow-[#00000040] overflow-hidden bg-[#FDFBF7] shadow-sm">
+              <div key={img._id} className="rounded shadow shadow-[#00000040] overflow-hidden bg-[#FDFBF7]">
                 <img src={img.imageUrl} alt={img.title} className="w-full h-72 object-fill" />
                 <div className="p-4">
                   <h3 className="font-serif text-lg text-[#5B2D07]">{img.title}</h3>
